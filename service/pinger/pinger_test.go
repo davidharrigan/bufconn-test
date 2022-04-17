@@ -30,8 +30,8 @@ func server(ctx context.Context) (pb.PingerClient, func()) {
 	}), grpc.WithInsecure())
 
 	closer := func() {
-		listener.Close()
 		s.Stop()
+		listener.Close()
 	}
 
 	client := pb.NewPingerClient(conn)
