@@ -133,3 +133,8 @@ func TestPingerStream(t *testing.T) {
 		})
 	}
 }
+
+func TestNoRPCs(t *testing.T) {
+	_, closer := server(context.Background())
+	defer closer()
+}
