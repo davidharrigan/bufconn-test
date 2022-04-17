@@ -28,14 +28,9 @@ func server(ctx context.Context) (pb.PingerClient, func()) {
 	conn, _ := grpc.DialContext(ctx, "", grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) {
 		return listener.Dial()
 	}), grpc.WithInsecure(), grpc.WithBlock())
-
-	closer := func() {
-		s.Stop()
-	}
-
 	client := pb.NewPingerClient(conn)
 
-	return client, closer
+	return client, s.Stop
 }
 
 func TestPinger(t *testing.T) {
