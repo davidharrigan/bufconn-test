@@ -27,16 +27,10 @@ func server(ctx context.Context) (pb.PingerClient, func()) {
 
 	conn, _ := grpc.DialContext(ctx, "", grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) {
 		return listener.Dial()
-	}), grpc.WithInsecure())
-
-	closer := func() {
-		listener.Close()
-		s.Stop()
-	}
-
+	}), grpc.WithInsecure(), grpc.WithBlock())
 	client := pb.NewPingerClient(conn)
 
-	return client, closer
+	return client, s.Stop
 }
 
 func TestPinger(t *testing.T) {
@@ -132,4 +126,9 @@ func TestPingerStream(t *testing.T) {
 			assert.Equal(io.EOF, err)
 		})
 	}
+}
+
+func TestNoRPCs(t *testing.T) {
+	_, closer := server(context.Background())
+	defer closer()
 }
